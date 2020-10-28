@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <p>Lorem impsum</p>
+    {% if current_user.is_anonymous %}
+    <h1>Hi stranger</h1>
+    {% else %}
+    <h1>Hi {{ current_user.username }}</h1>
+    {% endif %}
 {% endblock %}
