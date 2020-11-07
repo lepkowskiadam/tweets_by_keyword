@@ -17,3 +17,13 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm password', validators=[DataRequired(), EqualTo(password)])
     submit = SubmitField('Register')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if user is not None:
+            raise ValidationError("Username already taken")
+
+    def validate_email(self, email):
+        email = User.query.filter_by(email=email.data).first()
+        if email is not None:
+            raise ValidationError("Email already registered")
