@@ -8,9 +8,8 @@ from flask_login import LoginManager
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
-# for future login requirements
-# login.login_view('auth.login')
-# login.login_message('Please login')
+login.login_view = 'auth.login'
+login.login_message = 'Please login'
 
 
 def create_app(config_class=Config):
