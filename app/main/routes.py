@@ -3,7 +3,7 @@ from app import db
 from flask_login import login_required, current_user
 from app.main import bp
 from app.main.forms import FollowUserForm
-from app.models import Followed, User
+from app.models import Followed
 
 
 @bp.route('/', methods=['GET', 'POST'])
@@ -16,7 +16,6 @@ def index():
         follow = Followed(username=form.username.data, follower=current_user)
         db.session.add(follow)
         db.session.commit()
-        # TODO delete the current_user following list
-        flash(f'You are now following {form.username.data}, {current_user.followed.all()}')
+        flash(f'You are now following {form.username.data}')
         return redirect(url_for('main.index'))
     return render_template('index.html', title=title, form=form)
