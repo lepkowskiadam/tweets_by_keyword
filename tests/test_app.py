@@ -97,3 +97,11 @@ def test_login(client):
         response = login(test_client, 'test_user', 'test_pw')
         assert response.status_code == 200
         assert b'Logged in successfully' in response.data
+
+
+def test_logout(client):
+    with client.app_context():
+        test_client = client.test_client()
+        response = logout(test_client)
+        assert response.status_code == 200
+        assert b'Logged out successfully' in response.data
