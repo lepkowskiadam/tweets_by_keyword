@@ -24,6 +24,13 @@ def client():
     return app
 
 
+@pytest.fixture
+def user(client):
+    with client.app_context():
+        u = User.query.filter_by(username='test_user').first()
+    return u
+
+
 def test_client(client):
     with client.app_context():
         u = User.query.all()
@@ -33,3 +40,13 @@ def test_client(client):
         assert u[0].followed.one() == f[0]
         assert len(u) == 1
         assert len(f) == 1
+
+
+@pytest.mark.parametrize('password, expected', [
+    ('test_pw', True),
+    ('wrong_password', False)
+])
+def test_pw_hash(client, user, password, expected):
+    with client.app_context():
+        result = user.check_password(password)
+        assert result == expected
