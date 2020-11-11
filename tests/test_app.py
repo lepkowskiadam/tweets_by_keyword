@@ -83,9 +83,17 @@ def test_set_pw(client, user, password, expected):
 
 def test_registration(client):
     with client.app_context():
-        client_test = client.test_client()
-        response = register(client_test, 'test_1', 'test@test2.com', 'some_pw')
+        test_client = client.test_client()
+        response = register(test_client, 'test_1', 'test@test2.com', 'some_pw')
         assert response.status_code == 200
         assert b'Registered successfully' in response.data
         u = User.query.all()
         assert len(u) == 2
+
+
+def test_login(client):
+    with client.app_context():
+        test_client = client.test_client()
+        response = login(test_client, 'test_user', 'test_pw')
+        assert response.status_code == 200
+        assert b'Logged in successfully' in response.data
