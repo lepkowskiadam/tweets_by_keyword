@@ -10,6 +10,22 @@ class TestConfig(Config):
     TESTING = True
 
 
+def register(app, username, email, password):
+    post = app.post('/register', data=dict(username=username, email=email, password=password, confirm_password=password),
+                    follow_redirects=True)
+    return post
+
+
+def login(app, username, password):
+    post = app.post('/login', data=dict(username=username, password=password), follow_redirects=True)
+    return post
+
+
+def logout(app):
+    get = app.get('logout', follow_redirects=True)
+    return get
+
+
 @pytest.fixture
 def client():
     app = create_app(TestConfig)
