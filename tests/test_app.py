@@ -81,6 +81,14 @@ def test_set_pw(client, user, password, expected):
         assert result == expected
 
 
+def test_home_page(client):
+    with client.app_context():
+        test_client = client.test_client()
+        response = test_client.get('/', follow_redirects=True)
+        assert response.status_code == 200
+        assert b'Please login' in response.data
+
+
 def test_registration(client):
     with client.app_context():
         test_client = client.test_client()
@@ -105,3 +113,4 @@ def test_logout(client):
         response = logout(test_client)
         assert response.status_code == 200
         assert b'Logged out successfully' in response.data
+
