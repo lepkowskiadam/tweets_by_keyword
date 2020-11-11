@@ -6,6 +6,8 @@ import pytest
 
 class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    WTF_CSRF_ENABLED = False
+    TESTING = True
 
 
 @pytest.fixture
@@ -31,7 +33,7 @@ def user(client):
     return u
 
 
-def test_client(client):
+def test_app(client):
     with client.app_context():
         u = User.query.all()
         f = Followed.query.all()
