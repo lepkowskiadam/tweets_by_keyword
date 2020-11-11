@@ -50,3 +50,14 @@ def test_pw_hash(client, user, password, expected):
     with client.app_context():
         result = user.check_password(password)
         assert result == expected
+
+
+@pytest.mark.parametrize('password, expected', [
+    ('password_1', True),
+    ('password_2', True)
+])
+def test_set_pw(client, user, password, expected):
+    with client.app_context():
+        user.set_password(password)
+        result = user.check_password(password)
+        assert result == expected
