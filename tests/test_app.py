@@ -11,7 +11,8 @@ class TestConfig(Config):
 
 
 def register(app, username, email, password):
-    post = app.post('/register', data=dict(username=username, email=email, password=password, confirm_password=password),
+    post = app.post('/register',
+                    data=dict(username=username, email=email, password=password, confirm_password=password),
                     follow_redirects=True)
     return post
 
@@ -89,14 +90,19 @@ def test_home_page(client):
         assert b'Please login' in response.data
 
 
-def test_registration(client):
+@pytest.mark.parametrize('username, email, password, expected_msg, expected_users', [
+    ('test_1', 'test1@test.com', 'some_pw', b'Registered successfully', 2),
+    ('test_user', 'test_taken_username@test.com', 'some_pw', b'Username already taken', 1),
+    ('test_taken_email', 'test@test.com', 'some_pw', b'Email already registered', 1),
+])
+def test_registration(client, username, email, password, expected_msg, expected_users):
     with client.app_context():
         test_client = client.test_client()
-        response = register(test_client, 'test_1', 'test@test2.com', 'some_pw')
+        response = register(test_client, username, email, password)
         assert response.status_code == 200
-        assert b'Registered successfully' in response.data
+        assert expected_msg in response.data
         u = User.query.all()
-        assert len(u) == 2
+        assert len(u) == expected_users
 
 
 def test_login(client):
@@ -113,4 +119,3 @@ def test_logout(client):
         response = logout(test_client)
         assert response.status_code == 200
         assert b'Logged out successfully' in response.data
-
