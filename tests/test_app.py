@@ -95,7 +95,7 @@ def test_home_page(client):
     ('test_user', 'test_taken_username@test.com', 'some_pw', b'Username already taken', 1),
     ('test_taken_email', 'test@test.com', 'some_pw', b'Email already registered', 1),
 ])
-def test_registration(client, username, email, password, expected_msg, expected_users):
+def test_registration_form(client, username, email, password, expected_msg, expected_users):
     with client.app_context():
         test_client = client.test_client()
         response = register(test_client, username, email, password)
@@ -110,7 +110,7 @@ def test_registration(client, username, email, password, expected_msg, expected_
     ('wrong_username', 'test_pw', b'Invalid username or password', 200),
     ('test_user', 'wrong_pw', b'Invalid username or password', 200)
 ])
-def test_login(client, username, password, expected_msg, expected_status):
+def test_login_form(client, username, password, expected_msg, expected_status):
     with client.app_context():
         test_client = client.test_client()
         response = login(test_client, username, password)
