@@ -105,12 +105,17 @@ def test_registration(client, username, email, password, expected_msg, expected_
         assert len(u) == expected_users
 
 
-def test_login(client):
+@pytest.mark.parametrize('username, password, expected_msg, expected_status', [
+    ('test_user', 'test_pw', b'Logged in successfully', 200),
+    ('wrong_username', 'test_pw', b'Invalid username or password', 200),
+    ('test_user', 'wrong_pw', b'Invalid username or password', 200)
+])
+def test_login(client, username, password, expected_msg, expected_status):
     with client.app_context():
         test_client = client.test_client()
-        response = login(test_client, 'test_user', 'test_pw')
-        assert response.status_code == 200
-        assert b'Logged in successfully' in response.data
+        response = login(test_client, username, password)
+        assert response.status_code == expected_status
+        assert expected_msg in response.data
 
 
 def test_logout(client):
