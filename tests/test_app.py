@@ -112,3 +112,5 @@ def test_add_followed(client):
         assert len(followed) == 1
         assert user.username == 'test_follow'
         assert followed[0].username == 'test_followed_1'
+        response = follow(test_client, 'test_followed_1')
+        assert b'You already follow this user' in response.data
