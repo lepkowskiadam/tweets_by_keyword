@@ -1,13 +1,5 @@
-from config import Config
-from app import create_app, db
 from app.models import User, Followed
 import pytest
-
-
-class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
-    WTF_CSRF_ENABLED = False
-    TESTING = True
 
 
 def register(app, username, email, password):
@@ -23,31 +15,13 @@ def login(app, username, password):
 
 
 def logout(app):
-    get = app.get('logout', follow_redirects=True)
+    get = app.get('/logout', follow_redirects=True)
     return get
 
 
-@pytest.fixture
-def client():
-    app = create_app(TestConfig)
-    app.testing = True
-
-    with app.app_context():
-        db.create_all()
-        user = User(username='test_user', email='test@test.com')
-        user.set_password('test_pw')
-        followed = Followed(username='test_followed_user', follower=user)
-        db.session.add(user)
-        db.session.add(followed)
-        db.session.commit()
-    return app
-
-
-@pytest.fixture
-def user(client):
-    with client.app_context():
-        u = User.query.filter_by(username='test_user').first()
-    return u
+def follow(app, username):
+    post = app.post('/', data=dict(username=username))
+    return post
 
 
 def test_app(client):
@@ -121,6 +95,20 @@ def test_login_form(client, username, password, expected_msg, expected_status):
 def test_logout(client):
     with client.app_context():
         test_client = client.test_client()
+        login(test_client, 'test_user', 'test_pw')
         response = logout(test_client)
         assert response.status_code == 200
         assert b'Logged out successfully' in response.data
+
+
+def test_add_followed(client):
+    with client.app_context():
+        test_client = client.test_client()
+        register(test_client, 'test_follow', 'test@follow.com', 'follow')
+        user = User.query.filter_by(username='test_follow').first()
+        login(test_client, 'test_follow', 'follow')
+        follow(test_client, 'test_followed_1')
+        followed = Followed.query.filter_by(follower=user).all()
+        assert len(followed) == 1
+        assert user.username == 'test_follow'
+        assert followed[0].username == 'test_followed_1'
