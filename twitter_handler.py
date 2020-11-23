@@ -22,3 +22,12 @@ class TwitterHandler:
         except tweepy.error.TweepError:
             return False
         return True
+
+    def get_tweets(self, username, keyword):
+        if self.verify_user_exists(username):
+            tweets = []
+            for tweet in tweepy.Cursor(self.api.user_timeline, screen_name=username).items(20):
+                if keyword.lower() in tweet.text.lower():
+                    tweets.append((tweet.text, tweet.id))
+            return tweets
+        return f'{username} not found'
