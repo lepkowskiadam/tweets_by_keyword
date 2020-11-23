@@ -26,3 +26,11 @@ def test_verify_user_exists(handler, username, expected):
     with patch.object(handler, 'verify_user_exists', return_value=return_value):
         result = handler.verify_user_exists(username)
         assert result == expected
+
+
+def test_get_tweets(handler):
+    return_value = [Mock() for _ in range(20)]
+    for index, mock_tweet in enumerate(return_value):
+        mock_tweet.text = str(index)
+    with patch.object(tweepy.Cursor, 'items', return_value=return_value):
+        assert len(handler.get_tweets('Twitter', '10')) == 1
