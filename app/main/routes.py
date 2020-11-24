@@ -2,7 +2,7 @@ from flask import render_template, flash, redirect, url_for
 from app import db
 from flask_login import login_required, current_user
 from app.main import bp
-from app.main.forms import FollowUserForm
+from app.main.forms import FollowUserForm, UnfollowUserForm
 from app.models import Followed
 
 
@@ -10,12 +10,20 @@ from app.models import Followed
 @bp.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    form = FollowUserForm()
+    follow_form = FollowUserForm()
+    unfollow_form = UnfollowUserForm()
     title = 'tweets by keyword'
-    if form.validate_on_submit():
-        follow = Followed(username=form.username.data, follower=current_user)
+    follow_form.validate_on_submit()
+    if follow_form.follow_submit.data and follow_form.validate():
+        follow = Followed(username=follow_form.username.data, follower=current_user)
         db.session.add(follow)
         db.session.commit()
-        flash(f'You are now following {form.username.data}')
+        flash(f'You are now following {follow_form.username.data}')
         return redirect(url_for('main.index'))
-    return render_template('index.html', title=title, form=form)
+    elif unfollow_form.unfollow_submit.data and unfollow_form.validate():
+        followed = Followed.query.filter_by(username=unfollow_form.username.data, follower=current_user).first()
+        db.session.delete(followed)
+        db.session.commit()
+        flash(f'You no longer follow {unfollow_form.username.data}')
+        return redirect(url_for('main.index'))
+    return render_template('index.html', title=title, follow_form=follow_form, unfollow_form=unfollow_form)
