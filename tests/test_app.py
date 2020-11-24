@@ -19,8 +19,13 @@ def logout(app):
     return get
 
 
-def follow(app, username):
-    post = app.post('/', data=dict(username=username))
+def follow(app, username_follow):
+    post = app.post('/follow', data=dict(username_follow=username_follow))
+    return post
+
+
+def unfollow(app, username_unfollow):
+    post = app.post('/unfollow', data=dict(username_unfollow=username_unfollow))
     return post
 
 
@@ -114,3 +119,14 @@ def test_add_followed(client):
         assert followed[0].username == 'test_followed_1'
         response = follow(test_client, 'test_followed_1')
         assert b'You already follow this user' in response.data
+
+
+def test_remove_followed(client, user):
+    with client.app_context():
+        test_client = client.test_client()
+        login(test_client, 'test_user', 'test_pw')
+        followed = Followed.query.filter_by(follower=user).all()
+        assert len(followed) == 1
+        unfollow(test_client, 'test_followed_user')
+        followed = Followed.query.filter_by(follower=user).all()
+        assert len(followed) == 0
