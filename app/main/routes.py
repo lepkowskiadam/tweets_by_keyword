@@ -13,17 +13,36 @@ def index():
     follow_form = FollowUserForm()
     unfollow_form = UnfollowUserForm()
     title = 'tweets by keyword'
-    follow_form.validate_on_submit()
-    if follow_form.follow_submit.data and follow_form.validate():
-        follow = Followed(username=follow_form.username.data, follower=current_user)
-        db.session.add(follow)
+    return render_template('index.html', title=title, follow_form=follow_form, unfollow_form=unfollow_form)
+
+
+@bp.route('/follow', methods=['GET', 'POST'])
+@login_required
+def follow():
+    follow_form = FollowUserForm()
+    unfollow_form = UnfollowUserForm()
+    title = 'tweets by keyword'
+    if follow_form.validate_on_submit():
+        follow_user = Followed(username=follow_form.username_follow.data,
+                               follower=current_user)
+        db.session.add(follow_user)
         db.session.commit()
-        flash(f'You are now following {follow_form.username.data}')
+        flash(f'You are now following {follow_form.username_follow.data}')
         return redirect(url_for('main.index'))
-    elif unfollow_form.unfollow_submit.data and unfollow_form.validate():
-        followed = Followed.query.filter_by(username=unfollow_form.username.data, follower=current_user).first()
+    return render_template('index.html', title=title, follow_form=follow_form, unfollow_form=unfollow_form)
+
+
+@bp.route('/unfollow', methods=['GET', 'POST'])
+@login_required
+def unfollow():
+    follow_form = FollowUserForm()
+    unfollow_form = UnfollowUserForm()
+    title = 'tweets by keyword'
+    if unfollow_form.validate_on_submit():
+        followed = Followed.query.filter_by(username=unfollow_form.username_unfollow.data,
+                                            follower=current_user).first()
         db.session.delete(followed)
         db.session.commit()
-        flash(f'You no longer follow {unfollow_form.username.data}')
+        flash(f'You no longer follow {unfollow_form.username_unfollow.data}')
         return redirect(url_for('main.index'))
     return render_template('index.html', title=title, follow_form=follow_form, unfollow_form=unfollow_form)
