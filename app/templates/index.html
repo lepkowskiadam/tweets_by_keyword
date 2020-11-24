@@ -7,24 +7,24 @@
     <h1>Hi {{ current_user.username }}</h1>
     {% endif %}
     <h3>Add a user to follow</h3>
-    <form action="" method="post">
+    <form action="{{ url_for('main.follow') }}" method="post">
         {{ follow_form.hidden_tag() }}
         <p>
-            {{ follow_form.username.label }}
-            {{ follow_form.username(size=32) }}
-            {% for error in follow_form.username.errors %}
+            {{ follow_form.username_follow.label }}
+            {{ follow_form.username_follow(size=32) }}
+            {% for error in follow_form.username_follow.errors %}
             <p>[{{ error }}]</p>
             {% endfor %}
         </p>
         <p>{{ follow_form.follow_submit() }}</p>
     </form>
     <h3>Unfollow a user</h3>
-    <form action="" method="post">
+    <form action="{{ url_for('main.unfollow') }}" method="post">
         {{ unfollow_form.hidden_tag() }}
         <p>
-            {{ unfollow_form.username.label }}
-            {{ unfollow_form.username(size=32) }}
-            {% for error in unfollow_form.username.errors %}
+            {{ unfollow_form.username_unfollow.label }}
+            {{ unfollow_form.username_unfollow(size=32) }}
+            {% for error in unfollow_form.username_unfollow.errors %}
             <p>[{{ error }}]</p>
             {% endfor %}
         </p>
