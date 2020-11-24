@@ -8,14 +8,26 @@
     {% endif %}
     <h3>Add a user to follow</h3>
     <form action="" method="post">
-        {{ form.hidden_tag() }}
+        {{ follow_form.hidden_tag() }}
         <p>
-            {{ form.username.label }}
-            {{ form.username(size=32) }}
-            {% for error in form.username.errors %}
+            {{ follow_form.username.label }}
+            {{ follow_form.username(size=32) }}
+            {% for error in follow_form.username.errors %}
             <p>[{{ error }}]</p>
             {% endfor %}
         </p>
-        <p>{{ form.submit() }}</p>
+        <p>{{ follow_form.follow_submit() }}</p>
+    </form>
+    <h3>Unfollow a user</h3>
+    <form action="" method="post">
+        {{ unfollow_form.hidden_tag() }}
+        <p>
+            {{ unfollow_form.username.label }}
+            {{ unfollow_form.username(size=32) }}
+            {% for error in unfollow_form.username.errors %}
+            <p>[{{ error }}]</p>
+            {% endfor %}
+        </p>
+        <p>{{ unfollow_form.unfollow_submit() }}</p>
     </form>
 {% endblock %}
