@@ -56,6 +56,7 @@ def test_pw_hash(client, user, password, expected):
 ])
 def test_set_pw(client, user, password, expected):
     with client.app_context():
+        assert user.check_password('test_pw')
         user.set_password(password)
         result = user.check_password(password)
         assert result == expected
@@ -67,6 +68,8 @@ def test_home_page(client):
         response = test_client.get('/', follow_redirects=True)
         assert response.status_code == 200
         assert b'Please login' in response.data
+        response = login(test_client, 'test_user', 'test_pw')
+        assert b'tweets by keyword' in response.data
 
 
 @pytest.mark.parametrize('username, email, password, expected_msg, expected_users', [
@@ -119,6 +122,28 @@ def test_add_followed(client):
         assert followed[0].username == 'test_followed_1'
         response = follow(test_client, 'test_followed_1')
         assert b'You already follow this user' in response.data
+
+
+def test_multiple_followers(client):
+    with client.app_context():
+        test_client = client.test_client()
+        register(test_client, 'user_1', 'user1@user1.com', 'user_1')
+        register(test_client, 'user_2', 'user2@user2.com', 'user_2')
+        login(test_client, 'user_1', 'user_1')
+        follow(test_client, 'followed')
+        user = User.query.filter_by(username='user_1').first()
+        followed = Followed.query.filter_by(follower=user).all()
+        assert len(followed) == 1
+        assert user.username == 'user_1'
+        assert followed[0].username == 'followed'
+        logout(test_client)
+        login(test_client, 'user_2', 'user_2')
+        follow(test_client, 'followed')
+        user = User.query.filter_by(username='user_2').first()
+        followed = Followed.query.filter_by(follower=user).all()
+        assert len(followed) == 1
+        assert user.username == 'user_2'
+        assert followed[0].username == 'followed'
 
 
 def test_remove_followed(client, user):
