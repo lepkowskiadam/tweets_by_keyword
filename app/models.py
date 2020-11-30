@@ -19,6 +19,9 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def get_followed_users(self):
+        return [followed.username for followed in self.followed.all()]
+
 
 class Followed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +29,7 @@ class Followed(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f'<User: {self.username}>'
+        return f'<Twitter_user: {self.username}'
 
 
 @login.user_loader
