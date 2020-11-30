@@ -62,6 +62,15 @@ def test_set_pw(client, user, password, expected):
         assert result == expected
 
 
+def test_get_followed_users(client):
+    with client.app_context():
+        test_client = client.test_client()
+        login(test_client, 'test_user', 'test_pw')
+        user = User.query.filter_by(username='test_user').first()
+        result = user.get_followed_users()
+        assert len(result) == 1
+
+
 def test_home_page(client):
     with client.app_context():
         test_client = client.test_client()
