@@ -1,4 +1,6 @@
 from app.models import User, Followed
+from unittest.mock import patch
+from twitter_handler import TwitterHandler
 import pytest
 
 
@@ -118,7 +120,8 @@ def test_logout(client):
         assert b'Logged out successfully' in response.data
 
 
-def test_add_followed(client):
+@patch.object(TwitterHandler, 'verify_user_exists', return_value=True)
+def test_add_followed(mock_handler, client):
     with client.app_context():
         test_client = client.test_client()
         register(test_client, 'test_follow', 'test@follow.com', 'follow')
@@ -133,7 +136,8 @@ def test_add_followed(client):
         assert b'You already follow this user' in response.data
 
 
-def test_multiple_followers(client):
+@patch.object(TwitterHandler, 'verify_user_exists', return_value=True)
+def test_multiple_followers(mock_handler, client):
     with client.app_context():
         test_client = client.test_client()
         register(test_client, 'user_1', 'user1@user1.com', 'user_1')
