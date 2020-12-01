@@ -1,13 +1,6 @@
-from twitter_handler import TwitterHandler
 from unittest.mock import patch, Mock
 import tweepy
 import pytest
-
-
-@pytest.fixture
-def handler():
-    th = TwitterHandler()
-    return th
 
 
 def test_auth(handler):

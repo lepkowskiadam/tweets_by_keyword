@@ -1,6 +1,7 @@
 from app import create_app, db
 from app.models import User, Followed
 from config import Config
+from twitter_handler import TwitterHandler
 import pytest
 
 
@@ -8,6 +9,11 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     WTF_CSRF_ENABLED = False
     TESTING = True
+
+
+@pytest.fixture
+def handler():
+    return TwitterHandler
 
 
 @pytest.fixture
