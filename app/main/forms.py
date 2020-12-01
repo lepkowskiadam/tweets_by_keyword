@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, ValidationError
 from flask_login import current_user
+from twitter_handler import TwitterHandler
 
 
 class FollowUserForm(FlaskForm):
@@ -12,6 +13,8 @@ class FollowUserForm(FlaskForm):
         followed = [user.username for user in current_user.followed.all()]
         if username.data in followed:
             raise ValidationError('You already follow this user')
+        elif not TwitterHandler.verify_user_exists(username.data):
+            raise ValidationError(f'No user named <{username.data}> found on twitter')
 
 
 class UnfollowUserForm(FlaskForm):
