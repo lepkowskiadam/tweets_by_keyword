@@ -73,6 +73,16 @@ def test_get_followed_users(client):
         assert len(result) == 1
 
 
+def test_clear_follow_list(client):
+    with client.app_context():
+        test_client = client.test_client()
+        login(test_client, 'test_user', 'test_pw')
+        user = User.query.filter_by(username='test_user').first()
+        user.clear_follow_list()
+        result = user.get_followed_users()
+        assert len(result) == 0
+
+
 def test_home_page(client):
     with client.app_context():
         test_client = client.test_client()
