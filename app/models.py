@@ -22,6 +22,11 @@ class User(UserMixin, db.Model):
     def get_followed_users(self):
         return [followed.username for followed in self.followed.all()]
 
+    def clear_follow_list(self):
+        for followed in self.followed.all():
+            db.session.delete(followed)
+        db.session.commit()
+
 
 class Followed(db.Model):
     id = db.Column(db.Integer, primary_key=True)
