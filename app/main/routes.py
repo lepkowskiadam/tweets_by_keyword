@@ -64,3 +64,11 @@ def clear_follow_list():
         flash("You've cleared your follow list")
         return redirect(url_for('main.index'))
     return redirect(url_for('main.index'))
+
+
+@bp.route('/view_followed', methods=['GET'])
+@login_required
+def view_followed_list():
+    user = User.query.filter_by(username=current_user.username).first()
+    follow_list = user.get_followed_users()
+    return render_template('follow_list.html', follow_list=follow_list)
