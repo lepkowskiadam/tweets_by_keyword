@@ -25,3 +25,7 @@ class UnfollowUserForm(FlaskForm):
         followed = [user.username for user in current_user.followed.all()]
         if username.data not in followed:
             raise ValidationError('User not found in followed list')
+
+
+class BlankForm(FlaskForm):
+    submit = SubmitField('Submit')
