@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{%  if follow_list %}
+<ul>
+    {% for followed in follow_list %}
+    <li>{{ followed }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>You currently don't follow any users</p>
+{% endif %}
+{% endblock %}
