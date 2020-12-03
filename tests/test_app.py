@@ -31,6 +31,11 @@ def unfollow(app, username_unfollow):
     return post
 
 
+def clear_follow_list(app):
+    post = app.post('/clear_follow')
+    return post
+
+
 def test_app(client):
     with client.app_context():
         u = User.query.all()
@@ -178,3 +183,16 @@ def test_remove_followed(client, user):
         unfollow(test_client, 'test_followed_user')
         followed = Followed.query.filter_by(follower=user).all()
         assert len(followed) == 0
+
+
+@patch.object(TwitterHandler, 'verify_user_exists', return_value=True)
+def test_clear_follow_form(mock_handler, client):
+    with client.app_context():
+        test_client = client.test_client()
+        login(test_client, 'test_user', 'test_pw')
+        follow(test_client, 'user_1')
+        follow(test_client, 'user_2')
+        user = User.query.filter_by(username='test_user').first()
+        assert len(user.get_followed_users()) == 3
+        clear_follow_list(test_client)
+        assert len(user.get_followed_users()) == 0
