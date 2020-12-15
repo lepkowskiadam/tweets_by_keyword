@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>Search for a tweet</h3>
+    <form action="{{ url_for('main.get_tweets') }}" method="post">
+        {{ tweets_form.hidden_tag() }}
+        <p>
+            {{ tweets_form.keyword.label }}
+            {{ tweets_form.keyword(size=32) }}
+            {% for error in tweets_form.keyword.errors %}
+            <p>[{{ error }}]</p>
+            {% endfor %}
+        </p>
+        <p>{{ tweets_form.keyword_submit() }}</p>
+    </form>
+    <hr>
+{% endblock %}
