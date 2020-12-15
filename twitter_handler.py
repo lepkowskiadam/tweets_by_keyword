@@ -1,6 +1,8 @@
+import os
+
 from dotenv import load_dotenv
 import tweepy
-import os
+
 
 load_dotenv()
 
@@ -28,6 +30,6 @@ class TwitterHandler:
             tweets = []
             for tweet in tweepy.Cursor(cls.api.user_timeline, screen_name=username).items(20):
                 if keyword.lower() in tweet.text.lower():
-                    tweets.append((tweet.text, tweet.id))
+                    tweets.append(tweet.text)
             return tweets
         return f'{username} not found'
