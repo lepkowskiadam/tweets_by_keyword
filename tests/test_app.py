@@ -1,7 +1,9 @@
-from app.models import User, Followed
 from unittest.mock import patch
-from twitter_handler import TwitterHandler
+
 import pytest
+
+from twitter_handler import TwitterHandler
+from app.models import User, Followed
 
 
 def register(app, username, email, password):
@@ -196,3 +198,15 @@ def test_clear_follow_form(mock_handler, client):
         assert len(user.get_followed_users()) == 3
         clear_follow_list(test_client)
         assert len(user.get_followed_users()) == 0
+
+
+@pytest.mark.parametrize('keyword, expected', [
+    ('test', [('test_followed_user', ['test'])])
+])
+@patch.object(TwitterHandler, 'get_tweets', return_value=['test'])
+def test_tweets_from_followed(mock_tweets, client, keyword, expected):
+    with client.app_context():
+        user = User.query.filter_by(username='test_user').first()
+        assert len(user.get_followed_users()) == 1
+        result = user.tweets_from_followed(keyword)
+        assert result == expected
