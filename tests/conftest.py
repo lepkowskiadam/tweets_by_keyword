@@ -17,7 +17,7 @@ def handler():
 
 
 @pytest.fixture
-def client():
+def app():
     app = create_app(TestConfig)
     app.testing = True
 
@@ -29,11 +29,17 @@ def client():
         db.session.add(user)
         db.session.add(followed)
         db.session.commit()
-    return app
+        yield app
 
 
 @pytest.fixture
-def user(client):
-    with client.app_context():
+def user(app):
+    with app.app_context():
         u = User.query.filter_by(username='test_user').first()
     return u
+
+
+@pytest.fixture
+def test_client(app):
+    test_client = app.test_client()
+    return test_client
