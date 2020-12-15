@@ -1,6 +1,8 @@
-from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+
+from app import db, login
+from twitter_handler import TwitterHandler
 
 
 class User(UserMixin, db.Model):
@@ -26,6 +28,12 @@ class User(UserMixin, db.Model):
         for followed in self.followed.all():
             db.session.delete(followed)
         db.session.commit()
+
+    def tweets_from_followed(self, keyword):
+        results = []
+        for followed in self.followed.all():
+            results.append((followed.username, TwitterHandler.get_tweets(followed.username, keyword)))
+        return results
 
 
 class Followed(db.Model):
