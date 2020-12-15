@@ -1,8 +1,9 @@
 from flask import render_template, flash, redirect, url_for
-from app import db
 from flask_login import login_required, current_user
+
+from app import db
 from app.main import bp
-from app.main.forms import FollowUserForm, UnfollowUserForm, BlankForm
+from app.main.forms import FollowUserForm, UnfollowUserForm, BlankForm, GetTweetsForm
 from app.models import Followed, User
 
 
@@ -72,3 +73,20 @@ def view_followed_list():
     user = User.query.filter_by(username=current_user.username).first()
     follow_list = user.get_followed_users()
     return render_template('follow_list.html', follow_list=follow_list)
+
+
+@bp.route('/get_tweets', methods=['GET', 'POST'])
+@login_required
+def get_tweets():
+    tweets_form = GetTweetsForm()
+    if tweets_form.validate_on_submit():
+        keyword = tweets_form.keyword.data
+        user = User.query.filter_by(username=current_user.username).first()
+        tweets = user.tweets_from_followed(keyword)
+        for followed_user in tweets:
+            username, found_tweets = followed_user
+            flash(username)
+            for tweet in found_tweets:
+                flash(tweet)
+        return redirect(url_for('main.get_tweets'))
+    return render_template('get_tweets.html', tweets_form=tweets_form)
